@@ -1,8 +1,16 @@
+body { 
+	background-color: #f2f2f2;
+}
+
+#container {
+	margin: 0px auto;
+	width: 1200px;
+}
+
 #intro-container { 
-	height: 800px;
-	overflow: hidden;
+	background: url(../images/intro-image.jpg) 50% 0px no-repeat fixed;
+	height: 900px;
 	position: relative;
-	width: 100%;
 }
 
 #intro-header { 
@@ -11,7 +19,7 @@
 	position: absolute;
 	right: 10%;
 	text-align: center;
-	top: 100px;
+	top: 400px;
 	width: 300px;
 	z-index: 10;
 }	
@@ -26,17 +34,8 @@
 	font-weight: bold;
 }
 
-#intro-image { 
-	left: 0px;
-	height: 100%;
-	position: absolute:
-	top: 0px;
-	width: 100%;
-	z-index: 5;
-}
-
 #nav-container { 
-	height: 600px;
+	height: 900px;
 	position: relative;
 }
 
