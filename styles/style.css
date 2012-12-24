@@ -1,0 +1,80 @@
+#intro-container { 
+	height: 800px;
+	overflow: hidden;
+	position: relative;
+	width: 100%;
+}
+
+#intro-header { 
+	color: #434343;
+	font-family: Helvetica;
+	position: absolute;
+	right: 10%;
+	text-align: center;
+	top: 100px;
+	width: 300px;
+	z-index: 10;
+}	
+
+#intro-header h1 { 
+	font-size: 40px;
+	font-weight: bold;
+}
+
+#intro-header small { 
+	font-size: 14px;
+	font-weight: bold;
+}
+
+#intro-image { 
+	left: 0px;
+	height: 100%;
+	position: absolute:
+	top: 0px;
+	width: 100%;
+	z-index: 5;
+}
+
+#nav-container { 
+	height: 600px;
+	position: relative;
+}
+
+.nav-image {
+	background: #000000 url(../images/gold-picture-frame-349x291.png) left top no-repeat;
+	padding: 60px;
+	height: 171px;
+	position: absolute;
+	top: 50px;
+	width: 229px;
+}
+
+.nav-image.num-1 { 
+	left: 6%;
+	z-index: 10;
+}
+
+.nav-image.num-2 { 
+	left: 20%;
+	z-index: 11;
+}
+
+.nav-image.num-3 { 
+	left: 34%;
+	z-index: 12;
+}
+
+.nav-image.num-4 { 
+	left: 49%;
+	z-index: 13;
+}
+
+.nav-image.num-5 { 
+	left: 66%;
+	z-index: 14;
+}
+
+.nav-image img {
+	height: 100%;
+	width: 100%;
+}

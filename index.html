@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>d-low.com</title>
+	<link rel="stylesheet" type="text/css" href="styles/reset.css">
+	<link rel="stylesheet" type="text/css" href="styles/style.css">
+	<meta charset="utf-8" />
+</head>
+<body>
+	<div id="container">
+		<div id="intro-container">
+			<header id="intro-header">
+				<h1>d-low.com</h1>
+				<small>Words and text by Mike DiLorenzo</small>
+			</header>
+			<img id="intro-image" src="images/intro-image.jpg" alt="Descending from a pass" />
+		</div>
+		<div id="nav-container">
+			<nav>
+				<ul class="clearfix">
+					<li class="nav-image num-1">
+						<a href="javascript:void(0);"><img src="images/cdt.jpg" alt="CDT" /></a>
+					</li>
+					<li class="nav-image num-2">
+						<a href="javascript:void(0);"><img src="images/central-america.jpg" alt="Central America" /></a>
+					</li>
+					<li class="nav-image num-3">
+						<a href="javascript:void(0);"><img src="images/colorado.jpg" alt="Colorado" /></a>
+					</li>
+					<li class="nav-image num-4">
+						<a href="javascript:void(0);"><img src="images/europe.jpg" alt="Europe" /></a>
+					</li>
+					<li class="nav-image num-5">
+						<a href="javascript:void(0);"><img src="images/south-america.jpg" alt="South America" /></a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.js"></script>
+	<script type="text/javascript" src="scripts/d-low.js"></script>
+	<script>
+		$(document).ready(function() {
+			window.dlow = new DLow_Class();
+			window.dlow.init();
+		});
+	</script>
+</body>
+</html> 
