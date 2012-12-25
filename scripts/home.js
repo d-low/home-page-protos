@@ -9,7 +9,7 @@ Home_Class.prototype.init = function() {
 	// Get element handles
 	//
 
-	this.$introHeader = $("#intro-header");
+	this.$introContainer = $("#intro-container");
 	this.$navContainer = $("#nav-container");
 
 	// 
@@ -26,21 +26,21 @@ Home_Class.prototype.init = function() {
  */
 
 Home_Class.prototype.window_scroll = function(e) { 
-	this.introHeader_scroll(e);
+	this.introContainer_scroll(e);
 	this.navContainer_scroll(e);
 };
 
 /**
- * @description Upon scrolling keep the background position of the intro-header the 
- * same so that the intro-header content scrolls away but the image stays the same.
+ * @description Upon scrolling keep the background position of the intro-container the 
+ * same so that the intro-container content scrolls away but the image stays the same.
  */
 
-Home_Class.prototype.introHeader_scroll = function(e) { 
+Home_Class.prototype.introContainer_scroll = function(e) { 
 
 	var yPos = -($(window).scrollTop() / 10);
 	var coords = '50% '+ yPos + 'px';
 
-	this.$introHeader.css({"background-position": coords });
+	this.$introContainer.css({"background-position": coords });
 };
 
 /**
