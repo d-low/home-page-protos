@@ -46,21 +46,22 @@ Home_Class.prototype.introContainer_scroll = function(e) {
 };
 
 /**
- * @description When the navigation container is scrolled into view slide the
- * navigation images into view.  And when the navigation container is scrolled
- * out of view, slide the navigation images out of view.
- * TODO: Move each row of navigation images in at a time.
+ * @description Once the first 200px of the navigation container is scrolled into
+ * view then slide the navigation images into view.  And when scrolling in the 
+ * opposite direction once 200px or less of the navigation container is visible
+ * then slide the navigation images out of view.
  */
 
 Home_Class.prototype.navContainer_scroll = function(e) { 
-	
+
+	var windowHeight = $(window).height();
 	var scrollTop = $(window).scrollTop();
 	var navTopPos = this.$navContainer.position().top;
 
-	if (scrollTop > navTopPos) { 
+	if (this.$navImages.hasClass("off-screen") == true && windowHeight + scrollTop - navTopPos > 200) {
 		this.$navImages.removeClass("off-screen");
 	}
-	else if (scrollTop < navTopPos) { 
+	else if (this.$navImages.hasClass("off-screen") == false && windowHeight + scrollTop - navTopPos < 200) {
 		this.$navImages.addClass("off-screen");
 	}
 };
