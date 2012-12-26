@@ -1,6 +1,7 @@
 var Home_Class = function() { 
 	this.$introHeader = null;
 	this.$navContainer = null;
+	this.$navImages = null;
 };
 
 Home_Class.prototype.init = function() { 
@@ -11,6 +12,7 @@ Home_Class.prototype.init = function() {
 
 	this.$introContainer = $("#intro-container");
 	this.$navContainer = $("#nav-container");
+	this.$navImages = this.$navContainer.find(".nav-image");
 
 	// 
 	// Apply behavior
@@ -44,10 +46,21 @@ Home_Class.prototype.introContainer_scroll = function(e) {
 };
 
 /**
- * @description When the navigation container is scrolled into view for the first
- * time we need to slide the navigation images into view.
+ * @description When the navigation container is scrolled into view slide the
+ * navigation images into view.  And when the navigation container is scrolled
+ * out of view, slide the navigation images out of view.
+ * TODO: Move each row of navigation images in at a time.
  */
 
 Home_Class.prototype.navContainer_scroll = function(e) { 
-	// TODO: Implement behavior...
+	
+	var scrollTop = $(window).scrollTop();
+	var navTopPos = this.$navContainer.position().top;
+
+	if (scrollTop > navTopPos) { 
+		this.$navImages.removeClass("off-screen");
+	}
+	else if (scrollTop < navTopPos) { 
+		this.$navImages.addClass("off-screen");
+	}
 };
