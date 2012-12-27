@@ -68,23 +68,34 @@ Home_Class.prototype.navContainer_scroll = function(e) {
 	var windowHeight = $(window).height();
 	var scrollTop = $(window).scrollTop();
 	var navTopPos = this.$navContainer.position().top;
+	var pxShowing = windowHeight + scrollTop - navTopPos;
 
-	if (this.$navImages.hasClass("off-screen") == true && windowHeight + scrollTop - navTopPos > 200) {
+	//
+	// Function to invoke on each navigation image from the each() method.  For the
+	// specified navigation image and delay we'll either show or hide it by removing
+	// or adding the off-screen class.
+	//
+
+	var fEach = function($navImage, delay, show) {
+		$.wait(delay)
+			.then(function() { 
+				if (show) { 
+					$navImage.removeClass("off-screen");
+				}
+				else {
+					$navImage.addClass("off-screen");
+				}
+			});
+	};
+
+	if (this.$navImages.hasClass("off-screen") == true && pxShowing > 200) {
 		this.$navImages.each(function(index) {
-			var $navImage = $(this);
-			$.wait(500 * (index + 1)).then(function() { 
-				$navImage.removeClass("off-screen"); 
-			})
+			fEach($(this), 500 * (index + 1), true);
 		});
-		// this.$navImages.removeClass("off-screen");
 	}
-	else if (this.$navImages.hasClass("off-screen") == false && windowHeight + scrollTop - navTopPos < 200) {
+	else if (this.$navImages.hasClass("off-screen") == false && pxShowing < 200) {
 		this.$navImages.each(function(index) {
-			var $navImage = $(this);
-			$.wait(100 * (index + 1)).then(function() { 
-				$navImage.addClass("off-screen"); 
-			})
+			fEach($(this), 100 * (index + 1), false);
 		});
-		// this.$navImages.addClass("off-screen");
 	}
 };
