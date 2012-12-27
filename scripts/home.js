@@ -21,6 +21,17 @@ Home_Class.prototype.init = function() {
 	var that = this;
 
 	$(window).scroll(function(e) { that.window_scroll(e); });
+
+	//
+	// Add a custom jQuery wait() method for more expressive setTimeout() code.
+	// See: http://www.intridea.com/blog/2011/2/8/fun-with-jquery-deferred#
+	//
+
+	$.wait = function(time) {
+		return $.Deferred(function(dfd) {
+			setTimeout(dfd.resolve, time);
+		});
+	};
 };
 
 /**
@@ -59,9 +70,21 @@ Home_Class.prototype.navContainer_scroll = function(e) {
 	var navTopPos = this.$navContainer.position().top;
 
 	if (this.$navImages.hasClass("off-screen") == true && windowHeight + scrollTop - navTopPos > 200) {
-		this.$navImages.removeClass("off-screen");
+		this.$navImages.each(function(index) {
+			var $navImage = $(this);
+			$.wait(500 * (index + 1)).then(function() { 
+				$navImage.removeClass("off-screen"); 
+			})
+		});
+		// this.$navImages.removeClass("off-screen");
 	}
 	else if (this.$navImages.hasClass("off-screen") == false && windowHeight + scrollTop - navTopPos < 200) {
-		this.$navImages.addClass("off-screen");
+		this.$navImages.each(function(index) {
+			var $navImage = $(this);
+			$.wait(100 * (index + 1)).then(function() { 
+				$navImage.addClass("off-screen"); 
+			})
+		});
+		// this.$navImages.addClass("off-screen");
 	}
 };
