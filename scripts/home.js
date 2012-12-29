@@ -1,4 +1,10 @@
+/**
+ * @description This class provides the client side behavior/effects for the home 
+ * page of www.d-low.com.
+ */
+
 var Home_Class = function() { 
+	this.$introContainer = null;
 	this.$introHeader = null;
 	this.$navContainer = null;
 	this.$navImages = null;
@@ -11,6 +17,7 @@ Home_Class.prototype.init = function() {
 	//
 
 	this.$introContainer = $("#intro-container");
+	this.$introHeader = $("#intro-header");
 	this.$navContainer = $("#nav-container");
 	this.$navImages = this.$navContainer.find(".nav-image");
 
@@ -18,9 +25,7 @@ Home_Class.prototype.init = function() {
 	// Apply behavior
 	//
 	
-	var that = this;
-
-	$(window).scroll(function(e) { that.window_scroll(e); });
+	$(window).scroll($.proxy(this.window_scroll, this));
 
 	//
 	// Add a custom jQuery wait() method for more expressive setTimeout() code.
@@ -44,16 +49,46 @@ Home_Class.prototype.window_scroll = function(e) {
 };
 
 /**
- * @description Upon scrolling keep the background position of the intro-container the 
- * same so that the intro-container content scrolls away but the image stays the same.
+ * @description Upon scrolling update the background position of the intro-container so
+ * that its contents scroll away faster than the background image.
  */
 
 Home_Class.prototype.introContainer_scroll = function(e) { 
 
-	var yPos = -($(window).scrollTop() / 10);
+	var windowHeight = $(window).height();
+	var scrollTop = $(window).scrollTop();
+	var introContainerHeight = this.$introContainer.height();
+
+	//
+	// Just return if we've scrolled past the intro container
+	//
+
+	if (scrollTop > introContainerHeight) { 
+		return;
+	}
+
+	//
+	// Update the position of the the intro container background image.
+	//
+
+	var yPos = -(scrollTop / 10);
 	var coords = '50% '+ yPos + 'px';
 
 	this.$introContainer.css({"background-position": coords });
+
+	//
+	// Change the rgb color of the intro header element depending on how far we've
+	// scrolled up in the page.  We toggle it from rgb(10,10,10) to rgb(256, 256, 256).
+	// Note that we chose to change te color manually rather than use CSS3 transitions
+	// to do so because we want specific control of what color is displayed.
+	//
+
+	var introContainerHeight = this.$introContainer.height();
+	var elHeight = windowHeight > introContainerHeight ? windowHeight : introContainerHeight;
+	var color = parseInt(10 + (246 * scrollTop / elHeight));
+	color = color > 256 ? 256 : color;
+
+	this.$introHeader.css("color", "rgb(" + color + ", " + color + ", " + color + ")");
 };
 
 /**

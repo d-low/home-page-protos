@@ -1,3 +1,5 @@
+@import url(http://fonts.googleapis.com/css?family=Denk+One);
+
 body { 
 	background-color: #eeeeee;
 }
@@ -15,24 +17,26 @@ body {
 }
 
 #intro-header { 
-	color: #434343;
-	font-family: Helvetica;
+	color: rgb(10, 10, 10);
+	font-family: 'Denk One', Helvetica, sans-serif;
+	font-weight: bold;
 	position: absolute;
-	right: 10%;
+	right: 5%;
 	text-align: center;
 	top: 400px;
-	width: 300px;
+	-webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.5)));
 	z-index: 10;
 }	
 
 #intro-header h1 { 
-	font-size: 40px;
-	font-weight: bold;
+	font-size: 80px;
+	line-height: 80px;
+	text-shadow: -2px 0 2px #000066;
 }
 
 #intro-header small { 
-	font-size: 14px;
-	font-weight: bold;
+	font-size: 16px;
+	line-height: 16px;
 }
 
 #nav-container { 
@@ -46,6 +50,9 @@ body {
 	height: 171px;
 	position: absolute;
 	top: 50px;
+	-moz-transition: all 1s ease 0s;
+	-webkit-transition: all 1s ease 0s;
+	-o-transition: all 1s ease 0s;
 	transition: all 1s ease 0s;
 	width: 229px;
 	z-index: 10;
