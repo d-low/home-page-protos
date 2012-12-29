@@ -1,7 +1,7 @@
 @import url(http://fonts.googleapis.com/css?family=Denk+One);
 
 body { 
-	background-color: #eeeeee;
+	background-color: #c4c4c4;
 }
 
 #container {
@@ -40,6 +40,12 @@ body {
 }
 
 #nav-container { 
+	background-image: -o-linear-gradient(top, #c4c4c4 38%, #ffffff 80%);
+	background-image: -moz-linear-gradient(top, #c4c4c4 38%, #ffffff 80%);
+	background-image: -webkit-linear-gradient(top, #c4c4c4 38%, #ffffff 80%);
+	background-image: -ms-linear-gradient(top, #c4c4c4 38%, #ffffff 80%);
+	background-image: linear-gradient(top, #c4c4c4 38%, #ffffff 80%);
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.38, #c4c4c4), color-stop(0.80, #ffffff));
 	height: 900px;
 	position: relative;
 }
