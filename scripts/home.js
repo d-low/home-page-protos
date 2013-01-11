@@ -8,6 +8,9 @@ var Home_Class = function() {
 	this.$introHeader = null;
 	this.$navContainer = null;
 	this.$navImages = null;
+
+	this.introHeaderHeight = 0;
+	this.navContainerTop = 0;
 };
 
 Home_Class.prototype.init = function() { 
@@ -20,6 +23,13 @@ Home_Class.prototype.init = function() {
 	this.$introHeader = $("#intro-header");
 	this.$navContainer = $("#nav-container");
 	this.$navImages = this.$navContainer.find(".nav-image");
+
+	//
+	// Data members
+	//
+	
+	this.introHeaderHeight = this.$introHeader.height();
+	this.navContainerTop = parseInt(this.$navContainer.position().top);
 
 	// 
 	// Apply behavior
@@ -78,17 +88,36 @@ Home_Class.prototype.introContainer_scroll = function(e) {
 
 	//
 	// Change the rgb color of the intro header element depending on how far we've
-	// scrolled up in the page.  We toggle it from rgb(10,10,10) to rgb(256, 256, 256).
+	// scrolled up in the page.  We toggle it from rgb(10,10,10) to rgb(128, 128, 128).
 	// Note that we chose to change te color manually rather than use CSS3 transitions
 	// to do so because we want specific control of what color is displayed.
 	//
 
-	var introContainerHeight = this.$introContainer.height();
 	var elHeight = windowHeight > introContainerHeight ? windowHeight : introContainerHeight;
-	var color = parseInt(10 + (246 * scrollTop / elHeight));
-	color = color > 256 ? 256 : color;
+	var color = parseInt(10 + (118 * scrollTop / elHeight));
+	color = color > 128 ? 128 : color;
 
 	this.$introHeader.css("color", "rgb(" + color + ", " + color + ", " + color + ")");
+
+	//
+	// If the intro header will no longer fit in the intro container because too 
+	// much of it has been scrolled away then fade it out.  Otherwise fade it in.
+	// TODO: This isn't perfect.  The intro header fades in and out unexpectedly.
+	//
+
+	var introHeaderTop = parseInt(this.$introHeader.position().top);
+
+	if (introHeaderTop + this.introHeaderHeight > this.navContainerTop) { 
+		if (this.$introHeader.is(":visible") == true) { 
+			this.$introHeader.fadeOut();
+		}
+	}
+	else {
+		if (this.$introHeader.is(":visible") == false) { 
+			this.$introHeader.fadeIn();
+		}
+	}
+	
 };
 
 /**

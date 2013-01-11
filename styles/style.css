@@ -20,10 +20,10 @@ body {
 	color: rgb(10, 10, 10);
 	font-family: 'Denk One', Helvetica, sans-serif;
 	font-weight: bold;
-	position: absolute;
+	position: fixed;
 	right: 5%;
 	text-align: center;
-	top: 400px;
+	top: 10%;
 	-webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.5)));
 	z-index: 10;
 }	
