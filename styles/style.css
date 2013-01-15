@@ -9,11 +9,16 @@ body {
 	overflow-x: hidden;
 }
 
+#intro-container,
+#nav-container, 
+#about-me-container {
+	height: 900px;
+	position: relative;
+}
+
 #intro-container { 
 	background: url(../images/intro-image.jpg) 50% 0px no-repeat fixed;
 	background-size: 100% 100%;
-	height: 900px;
-	position: relative;
 }
 
 #intro-header { 
@@ -46,8 +51,6 @@ body {
 	background-image: -ms-linear-gradient(top, #c4c4c4 38%, #ffffff 80%);
 	background-image: linear-gradient(top, #c4c4c4 38%, #ffffff 80%);
 	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.38, #c4c4c4), color-stop(0.80, #ffffff));
-	height: 900px;
-	position: relative;
 }
 
 .nav-image {
@@ -100,4 +103,15 @@ body {
 .nav-image img {
 	height: 100%;
 	width: 100%;
+}
+
+/* Temporary styles for the about me container. */
+
+#about-me-container {
+	background-color: #000000;
+}
+
+#about-me-container p {
+	color: #666666;
+	font-weight: bold;
 }

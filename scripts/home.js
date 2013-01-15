@@ -9,9 +9,22 @@ var Home_Class = function() {
 	this.$navContainer = null;
 	this.$navImages = null;
 
-	this.introHeaderHeight = 0;
-	this.navContainerTop = 0;
+	this.heights = {
+		introContainer: 0,
+		introHeader: 0,
+		navContainer: 0
+	};
+
+	this.positions = {
+		introHeaderTop: 0,
+		navContainerTop: 0
+	};
+
+	// Set to true when toggling nav images and to false when done so that
+	// we don't toggle them in or out when already doing so!
+	this.togglingNavImages = false;
 };
+
 
 Home_Class.prototype.init = function() { 
 
@@ -28,9 +41,13 @@ Home_Class.prototype.init = function() {
 	// Data members
 	//
 	
-	this.introHeaderHeight = this.$introHeader.height();
-	this.navContainerTop = parseInt(this.$navContainer.position().top);
+	this.heights.introContainer = this.$introContainer.height();
+	this.heights.introHeader = this.$introHeader.height();
+	this.heights.navContainer = this.$navContainer.height();
 
+	this.positions.introHeaderTop = parseInt(this.$introHeader.css("top"));
+	this.positions.navContainerTop = parseInt(this.$navContainer.position().top);
+	
 	// 
 	// Apply behavior
 	//
@@ -49,98 +66,173 @@ Home_Class.prototype.init = function() {
 	};
 };
 
+
 /**
  * @description Handle the onscroll events to liven up the home page.
  */
 
 Home_Class.prototype.window_scroll = function(e) { 
-	this.introContainer_scroll(e);
-	this.navContainer_scroll(e);
-};
 
-/**
- * @description Upon scrolling update the background position of the intro-container so
- * that its contents scroll away faster than the background image.
- */
+	var windowScrollTop = $(window).scrollTop();
 
-Home_Class.prototype.introContainer_scroll = function(e) { 
-
-	var windowHeight = $(window).height();
-	var scrollTop = $(window).scrollTop();
-	var introContainerHeight = this.$introContainer.height();
-
-	//
-	// Just return if we've scrolled past the intro container
-	//
-
-	if (scrollTop > introContainerHeight) { 
-		return;
+	if (this.isIntroContainerVisible() == true) {
+		this.updateIntroContainerBackground();
+		this.updateIntroHeaderOpacity();
 	}
 
-	//
-	// Update the position of the the intro container background image.
-	//
-
-	var yPos = -(scrollTop / 10);
-	var coords = '50% '+ yPos + 'px';
-
-	this.$introContainer.css({"background-position": coords });
-
-	//
-	// Change the rgb color of the intro header element depending on how far we've
-	// scrolled up in the page.  We toggle it from rgb(10,10,10) to rgb(128, 128, 128).
-	// Note that we chose to change te color manually rather than use CSS3 transitions
-	// to do so because we want specific control of what color is displayed.
-	//
-
-	var elHeight = windowHeight > introContainerHeight ? windowHeight : introContainerHeight;
-	var color = parseInt(10 + (118 * scrollTop / elHeight));
-	color = color > 128 ? 128 : color;
-
-	this.$introHeader.css("color", "rgb(" + color + ", " + color + ", " + color + ")");
-
-	//
-	// If the intro header will no longer fit in the intro container because too 
-	// much of it has been scrolled away then fade it out.  Otherwise fade it in.
-	// TODO: This isn't perfect.  The intro header fades in and out unexpectedly.
-	//
-
-	var introHeaderTop = parseInt(this.$introHeader.position().top);
-
-	if (introHeaderTop + this.introHeaderHeight > this.navContainerTop) { 
-		if (this.$introHeader.is(":visible") == true) { 
-			this.$introHeader.fadeOut();
+	if (this.isNavContainerVisible() == true) { 
+		var pxShowing = this.pixelsOfNavContainerShowing();
+		var areNavImagesVisible = this.areNavImagesVisible();
+	
+		if (pxShowing >= 200 && areNavImagesVisible == false) { 
+			this.toggleNavImages(true);
 		}
+		else if (pxShowing < 200 && areNavImagesVisible == true) {
+			this.toggleNavImages(false);
+		}
+	}
+};
+
+
+// ****************************************************************************
+// Position Checking Methods
+// ****************************************************************************
+
+/**
+ * @description The intro container is visible when the window's scroll top
+ * is greater or equal to the height of the intro container.
+ */
+
+Home_Class.prototype.isIntroContainerVisible = function() { 
+	var isVisible = true;
+	
+	if ($(window).scrollTop() >= this.heights.introContainer) {
+		isVisible = false;
+	}
+
+	return isVisible;
+};
+
+
+/**
+ * @description The intro header cannot be shown if the intro container is
+ * not visible or if the height showing of the intro container is smaller 
+ * than the height of the intro header.
+ */
+
+Home_Class.prototype.canIntroHeaderBeShown = function() { 
+	var canBeShown = true;
+
+	if (this.isIntroContainerVisible() == false) {
+		canBeShown = false;
 	}
 	else {
-		if (this.$introHeader.is(":visible") == false) { 
-			this.$introHeader.fadeIn();
+		if ($(window).scrollTop() >= this.heights.introContainer - this.heights.introHeader - this.positions.introHeaderTop) { 
+			canBeShown = false;
 		}
 	}
-	
+
+	return canBeShown;
 };
 
+
 /**
- * @description Once the first 200px of the navigation container is scrolled into
- * view then slide the navigation images into view.  And when scrolling in the 
- * opposite direction once 200px or less of the navigation container is visible
- * then slide the navigation images out of view.
+ * @description The nav container is visible when the window height plus the scroll
+ * top is greater than or equal to the nav container's top position and less than
+ * or equal to the top position of the nav container plus its height.
  */
 
-Home_Class.prototype.navContainer_scroll = function(e) { 
+Home_Class.prototype.isNavContainerVisible = function() { 
+	var windowHeight = $(window).height();
+	var windowScrollTop = $(window).scrollTop();
+	var isVisible = false;
 
+	if (windowHeight + windowScrollTop >= this.positions.navContainerTop &&
+		windowHeight + windowScrollTop <= this.positions.navContainerTop + this.heights.navContainer)
+	{
+		isVisible = true;
+	}
+		
+	return isVisible;
+};
+
+
+/**
+ * @description Calculate the number of pixels of the nav container that are showing.  
+ */
+
+Home_Class.prototype.pixelsOfNavContainerShowing = function() { 
 	var windowHeight = $(window).height();
 	var scrollTop = $(window).scrollTop();
 	var navTopPos = this.$navContainer.position().top;
 	var pxShowing = windowHeight + scrollTop - navTopPos;
 
-	//
-	// Function to invoke on each navigation image from the each() method.  For the
-	// specified navigation image and delay we'll either show or hide it by removing
-	// or adding the off-screen class.
-	//
+	return (pxShowing < 0 ? 0 : pxShowing);
+};
 
-	var fEach = function($navImage, delay, show) {
+
+/**
+ * @description If none of the nav images has the off screen class then
+ * return true because they're all visible.
+ */
+
+Home_Class.prototype.areNavImagesVisible = function() { 
+	return (this.$navImages.hasClass("off-screen") == true ? false : true);
+};
+
+
+
+// ****************************************************************************
+// Effects Methods
+// ****************************************************************************
+
+/**
+ * @description Update the background position of the intro-container so that
+ * its contents scroll away faster than the background image.  This is a simple
+ * parallax scrolling technique.
+ */
+
+Home_Class.prototype.updateIntroContainerBackground = function() { 
+	var scrollTop = $(window).scrollTop();
+	var yPos = -(scrollTop / 10);
+	var coords = '50% '+ yPos + 'px';
+
+	this.$introContainer.css({"background-position": coords });
+};
+
+
+/**
+ * @description Update the opacity of the intro header as we scroll down the page so 
+ * that it fades away as the intro container is scrolled out of view.
+ */
+
+Home_Class.prototype.updateIntroHeaderOpacity = function() { 
+
+	var scrollTop = $(window).scrollTop();
+	var scrollRange = this.heights.introContainer - this.positions.introHeaderTop;
+	var opacity = Number((100 - (scrollTop / scrollRange * 100)) / 100).toFixed(2);
+	opacity = opacity < 0 ? 0 : opacity;
+
+	this.$introHeader.css("opacity", opacity);
+};
+
+
+/**
+ * @description Slide the navigation images into or out of view.
+ */
+
+Home_Class.prototype.toggleNavImages = function(show) {
+
+	// Just return if we're already toggling the nav images.
+	if (this.togglingNavImages) { 
+		return;
+	}
+
+	this.togglingNavImages = true;
+
+	var that = this;
+
+	var fEach = function($navImage, delay, index) {
 		$.wait(delay)
 			.then(function() { 
 				if (show) { 
@@ -149,17 +241,17 @@ Home_Class.prototype.navContainer_scroll = function(e) {
 				else {
 					$navImage.addClass("off-screen");
 				}
+			
+				// Reset our mutex once we've toggled the last nav image.
+				if (index == that.$navImages.length - 1) {
+					that.togglingNavImages = false;
+				}
 			});
 	};
 
-	if (this.$navImages.hasClass("off-screen") == true && pxShowing > 200) {
-		this.$navImages.each(function(index) {
-			fEach($(this), 500 * (index + 1), true);
-		});
-	}
-	else if (this.$navImages.hasClass("off-screen") == false && pxShowing < 200) {
-		this.$navImages.each(function(index) {
-			fEach($(this), 100 * (index + 1), false);
-		});
-	}
-};
+	var delay = (show == true ? 500 : 100);
+
+	this.$navImages.each(function(index) {
+		fEach($(this), delay * (index + 1), index);
+	});
+}; 
