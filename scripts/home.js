@@ -47,6 +47,12 @@ Home_Class.prototype.init = function() {
 
 	this.positions.introHeaderTop = parseInt(this.$introHeader.css("top"));
 	this.positions.navContainerTop = parseInt(this.$navContainer.position().top);
+
+	//
+	// Position navigation images based on screen resolution.
+	//
+
+	this.positionNavImages();
 	
 	// 
 	// Apply behavior
@@ -95,12 +101,83 @@ Home_Class.prototype.window_scroll = function(e) {
 
 
 // ****************************************************************************
-// Position Checking Methods
+// Positioning Methods
 // ****************************************************************************
+
+/**
+ * @description Programmatically posiiton the navigation images based on the
+ * screen resolution width.
+ */
+
+Home_Class.prototype.positionNavImages = function() { 
+
+	var screenWidth = $(window).width();
+	var navImageWidth = this.$navImages.outerWidth();
+	var navImageHeight = this.$navImages.outerHeight();
+	var paddingBetween = 30;
+	var paddingBelow = 100;
+
+	var minRowWidthFor3 = 3 * navImageWidth + 2 * paddingBetween;
+
+	//
+	// TODO: Refactor the logic below to be based off a numPerRow which 
+	// will be calculated based on the screen width.  We're close...
+	//
+	
+	if (screenWidth > minRowWidthFor3) {
+
+		//
+		// If we can fit three images per row for the current screen width
+		// then dynamically position groups of three on each row.  
+		// Note that we do not yet gracefully handle having less than three
+		// on a row.  
+		//
+		
+		var rowLeftPos = (screenWidth - minRowWidthFor3) / 2;
+		var numRenderedPerRow = 0;
+		var rowNum = 1;
+
+		for (var i = 0; i < this.$navImages.length; i++) { 	
+			var $navImage = $(this.$navImages[i]);
+
+			if (numRenderedPerRow == 3) {
+				numRenderedPerRow = 0;
+				rowNum++;
+			}
+		
+			var left = rowLeftPos + (numRenderedPerRow * (navImageWidth + paddingBetween));
+			var top = 50 * rowNum + ((rowNum - 1) * navImageHeight);
+
+			if (rowNum % 2) {
+				$navImage.css("left", left + "px");
+			}
+			else {
+				$navImage.css("right", (screenWidth - left - navImageWidth) + "px");
+			}
+
+			$navImage.css("top", top + "px");
+			
+			if (rowNum % 2) {
+				$navImage.addClass("off-screen off-screen-left");
+				$navImage.data("offscreenclass", "off-screen off-screen-left");
+			}
+			else {
+				$navImage.addClass("off-screen off-screen-right");
+				$navImage.data("offscreenclass", "off-screen off-screen-right");
+			}
+
+			numRenderedPerRow++;
+		}
+	}	
+
+	return;
+};
+
 
 /**
  * @description The intro container is visible when the window's scroll top
  * is greater or equal to the height of the intro container.
+ *
  */
 
 Home_Class.prototype.isIntroContainerVisible = function() { 
@@ -236,10 +313,12 @@ Home_Class.prototype.toggleNavImages = function(show) {
 		$.wait(delay)
 			.then(function() { 
 				if (show) { 
-					$navImage.removeClass("off-screen");
+					$navImage.removeClass("off-screen off-screen-left");
+					$navImage.removeClass("off-screen off-screen-right");
 				}
 				else {
-					$navImage.addClass("off-screen");
+					var offScreenClassName = $navImage.data("offscreenclass");
+					$navImage.addClass(offScreenClassName);
 				}
 			
 				// Reset our mutex once we've toggled the last nav image.
