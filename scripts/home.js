@@ -4,6 +4,7 @@
  */
 
 var Home_Class = function() { 
+
 	this.$introContainer = null;
 	this.$introHeader = null;
 	this.$navContainer = null;
@@ -49,10 +50,11 @@ Home_Class.prototype.init = function() {
 	this.positions.navContainerTop = parseInt(this.$navContainer.position().top);
 
 	//
-	// Position navigation images based on screen resolution.
+	// Position navigation images based on screen resolution
+	// and reset the navigation container height if needed.
 	//
 
-	this.positionNavImages();
+	this.updateNavigation();
 	
 	// 
 	// Apply behavior
@@ -109,69 +111,120 @@ Home_Class.prototype.window_scroll = function(e) {
  * screen resolution width.
  */
 
-Home_Class.prototype.positionNavImages = function() { 
+Home_Class.prototype.updateNavigation = function() { 
 
 	var screenWidth = $(window).width();
 	var navImageWidth = this.$navImages.outerWidth();
 	var navImageHeight = this.$navImages.outerHeight();
+	var rowOffSet = 50;
 	var paddingBetween = 30;
-	var paddingBelow = 100;
-
-	var minRowWidthFor3 = 3 * navImageWidth + 2 * paddingBetween;
 
 	//
-	// TODO: Refactor the logic below to be based off a numPerRow which 
-	// will be calculated based on the screen width.  We're close...
+	// Calculate the minimum row width for 3, 2 and 1 image(s).
+	// 
+	
+	var minRowWidthFor3 = 3 * navImageWidth + 2 * paddingBetween;
+	var minRowWidthFor2 = 2 * navImageWidth + paddingBetween;
+	var minRowWidthFor1 = navImageWidth;
+
+	//
+	// Determine the number of images per row and the minimum row width
+	// based on the screen width.
 	//
 	
-	if (screenWidth > minRowWidthFor3) {
+	var numPerRow, minRowWidth;
 
-		//
-		// If we can fit three images per row for the current screen width
-		// then dynamically position groups of three on each row.  
-		// Note that we do not yet gracefully handle having less than three
-		// on a row.  
-		//
+	if (screenWidth >= minRowWidthFor3) {
+		numPerRow = 3;
+		minRowWidth = minRowWidthFor3;
+	}
+	else if (screenWidth >= minRowWidthFor2) {
+		numPerRow = 2;
+		minRowWidth = minRowWidthFor2;
+	}
+	else {
+		numPerRow = 1;
+		minRowWidth = minRowWidthFor1;
+	}
+	
+	//
+	// Position the images.
+	//
 		
-		var rowLeftPos = (screenWidth - minRowWidthFor3) / 2;
-		var numRenderedPerRow = 0;
-		var rowNum = 1;
+	var rowLeftPos = (screenWidth - minRowWidth) / 2;
+	var numRenderedPerRow = 0;
+	var numRows, rowNum = 1;
 
-		for (var i = 0; i < this.$navImages.length; i++) { 	
-			var $navImage = $(this.$navImages[i]);
+	for (var i = 0; i < this.$navImages.length; i++) { 	
+		var $navImage = $(this.$navImages[i]);
 
-			if (numRenderedPerRow == 3) {
-				numRenderedPerRow = 0;
-				rowNum++;
-			}
+		// Once we're rendered the number per row we start rendering the 
+		// next image on a new row.
 		
-			var left = rowLeftPos + (numRenderedPerRow * (navImageWidth + paddingBetween));
-			var top = 50 * rowNum + ((rowNum - 1) * navImageHeight);
+		if (numRenderedPerRow == numPerRow) {
+			numRenderedPerRow = 0;
+			rowNum++;
+			numRows = rowNum;
 
-			if (rowNum % 2) {
-				$navImage.css("left", left + "px");
+			// If the number of images we have left to display is less than 
+			// the number we're displaying per row then we need to update 
+			// the number per row and minimum row width.
+		
+			var numImagesLeft = this.$navImages.length - i;
+	
+			if (numImagesLeft <= numPerRow) {
+				if (numImagesLeft == 2) { 
+					numPerRow = 2;
+					minRowWidth = minRowWidthFor2;
+				}
+				else {
+					numPerRow = 1;
+					minRowWidth = minRowWidthFor1;
+				}
+				rowLeftPos = (screenWidth - minRowWidth) / 2;
 			}
-			else {
-				$navImage.css("right", (screenWidth - left - navImageWidth) + "px");
-			}
-
-			$navImage.css("top", top + "px");
-			
-			if (rowNum % 2) {
-				$navImage.addClass("off-screen off-screen-left");
-				$navImage.data("offscreenclass", "off-screen off-screen-left");
-			}
-			else {
-				$navImage.addClass("off-screen off-screen-right");
-				$navImage.data("offscreenclass", "off-screen off-screen-right");
-			}
-
-			numRenderedPerRow++;
 		}
+		
+		var left = rowLeftPos + (numRenderedPerRow * (navImageWidth + paddingBetween));
+		var top = rowOffSet * rowNum + ((rowNum - 1) * navImageHeight);
+
+		if (rowNum % 2) {
+			$navImage.css("left", left + "px");
+		}
+		else {
+			$navImage.css("right", (screenWidth - left - navImageWidth) + "px");
+		}
+
+		$navImage.css("top", top + "px");
+			
+		if (rowNum % 2) {
+			$navImage.addClass("off-screen off-screen-left");
+			$navImage.data("offscreenclass", "off-screen off-screen-left");
+		}
+		else {
+			$navImage.addClass("off-screen off-screen-right");
+			$navImage.data("offscreenclass", "off-screen off-screen-right");
+		}
+
+		numRenderedPerRow++;
 	}	
 
-	return;
-};
+	//
+	// After positioning the navigation images we may need to reset the
+	// height of the navigation container if height of the number of 
+	// rows of images we've rendered exceeds the original height of 
+	// the navigation container.
+	//
+
+	var heightOfRows = (rowOffSet * numRows) + (navImageHeight * numRows);
+
+	if (heightOfRows >= this.heights.navContainer - 100) { // -100px breathing room
+		var newHeight = heightOfRows + 100;
+		this.$navContainer.css("height", newHeight + "px");
+		this.heights.navContainer = newHeight;
+	}
+
+}; // end Home_Class.updateNavigation()
 
 
 /**
@@ -333,4 +386,5 @@ Home_Class.prototype.toggleNavImages = function(show) {
 	this.$navImages.each(function(index) {
 		fEach($(this), delay * (index + 1), index);
 	});
-}; 
+
+}; // end Home_Class.toggleNavImages()
