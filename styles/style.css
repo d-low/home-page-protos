@@ -83,6 +83,7 @@ body {
 	background: #000000 url(../images/gold-picture-frame-349x291.png) left top no-repeat;
 	padding: 60px;
 	height: 171px;
+	overflow: hidden;
 	position: absolute;
 	-moz-transition: all 1s ease 0s;
 	-webkit-transition: all 1s ease 0s;
@@ -116,8 +117,13 @@ body {
 	left: 87px;
 	position: absolute;
 	text-align: center;
-	top: 235px;
+	top: -100px;
+	transition: all 0.75s cubic-bezier(0.19, 1, 0.22, 1) 0.25s;
 	width: 175px;
+}
+
+.nav-image:hover .nav-image-caption {
+	top: 235px;
 }
 
 /* Temporary styles for the about me container. */
