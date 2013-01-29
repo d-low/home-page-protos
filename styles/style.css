@@ -105,6 +105,21 @@ body {
 	width: 100%;
 }
 
+.nav-image .nav-image-caption {
+	background: transparent url(../images/trophy-plaque-175x50.png) left top no-repeat;
+	color: #ba954c;
+	cursor: pointer;
+	font-family: 'Denk One', Helvetica, sans-serif;
+	font-weight: bold;
+	height: 50px;
+	line-height: 50px;
+	left: 87px;
+	position: absolute;
+	text-align: center;
+	top: 235px;
+	width: 175px;
+}
+
 /* Temporary styles for the about me container. */
 
 #about-me-container {
