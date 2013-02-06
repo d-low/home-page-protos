@@ -10,6 +10,12 @@ var Home_Class = function() {
 	this.$navContainer = null;
 	this.$navImages = null;
 
+	this.navContainerPxShowing = 200;
+
+	this.timeouts = {
+		resize: null
+	};
+
 	this.heights = {
 		introContainer: 0,
 		introHeader: 0,
@@ -25,7 +31,6 @@ var Home_Class = function() {
 	// we don't toggle them in or out when already doing so!
 	this.togglingNavImages = false;
 };
-
 
 Home_Class.prototype.init = function() { 
 
@@ -50,16 +55,17 @@ Home_Class.prototype.init = function() {
 	this.positions.navContainerTop = parseInt(this.$navContainer.position().top);
 
 	//
-	// Position navigation images based on screen resolution
-	// and reset the navigation container height if needed.
+	// Update sizing and positioning
 	//
 
+	this.updateIntroContainerHeight();
 	this.updateNavigation();
 	
 	// 
-	// Apply behavior
+	// Event handlers
 	//
 	
+	$(window).resize($.proxy(this.window_resize, this));
 	$(window).scroll($.proxy(this.window_scroll, this));
 
 	//
@@ -74,6 +80,27 @@ Home_Class.prototype.init = function() {
 	};
 };
 
+
+// ****************************************************************************
+// Event Handlers
+// ****************************************************************************
+
+/**
+ * @description Upon the last window resize event firing we'll update our 
+ * section container heights and then the navigation positioning.
+ */
+
+Home_Class.prototype.window_resize = function(e) { 
+	var self = this;
+
+	var fResize = function() { 
+		self.updateIntroContainerHeight();
+		self.updateNavigation();
+	};	
+
+	window.clearTimeout(this.timeouts.resize);
+	this.timeouts.resize = window.setTimeout(fResize, 100);
+};
 
 /**
  * @description Handle the onscroll events to liven up the home page.
@@ -92,10 +119,10 @@ Home_Class.prototype.window_scroll = function(e) {
 		var pxShowing = this.pixelsOfNavContainerShowing();
 		var areNavImagesVisible = this.areNavImagesVisible();
 	
-		if (pxShowing >= 200 && areNavImagesVisible == false) { 
+		if (pxShowing >= this.navContainerPxShowing && areNavImagesVisible == false) { 
 			this.toggleNavImages(true);
 		}
-		else if (pxShowing < 200 && areNavImagesVisible == true) {
+		else if (pxShowing < this.navContainerPxShowing && areNavImagesVisible == true) {
 			this.toggleNavImages(false);
 		}
 	}
@@ -107,8 +134,21 @@ Home_Class.prototype.window_scroll = function(e) {
 // ****************************************************************************
 
 /**
+ * @description Set the height of the intro container elements to be the height 
+ * of the view port so that the background image on the intro container, and perhaps
+ * others, covers the viewport properly.  This method will be called after the 
+ * last window resize event.
+ */
+
+Home_Class.prototype.updateIntroContainerHeight = function() { 
+	var height = $(window).height();
+	this.$introContainer.css("height", height + "px");
+};
+
+/**
  * @description Programmatically posiiton the navigation images based on the
- * screen resolution width.
+ * screen resolution width.  This method will be called after the last window
+ * resize event.
  */
 
 Home_Class.prototype.updateNavigation = function() { 
@@ -118,6 +158,7 @@ Home_Class.prototype.updateNavigation = function() {
 	var navImageHeight = this.$navImages.outerHeight();
 	var rowOffSet = 50;
 	var paddingBetween = 30;
+	var pxShowing = this.pixelsOfNavContainerShowing();
 
 	//
 	// Calculate the minimum row width for 3, 2 and 1 image(s).
@@ -198,11 +239,17 @@ Home_Class.prototype.updateNavigation = function() {
 		$navImage.css("top", top + "px");
 			
 		if (rowNum % 2) {
-			$navImage.addClass("off-screen off-screen-left");
+			if (pxShowing < this.navContainerPxShowing) {
+				$navImage.addClass("off-screen off-screen-left");
+			}
+
 			$navImage.data("offscreenclass", "off-screen off-screen-left");
 		}
 		else {
-			$navImage.addClass("off-screen off-screen-right");
+			if (pxShowing < this.navContainerPxShowing) {
+				$navImage.addClass("off-screen off-screen-right");
+			}
+
 			$navImage.data("offscreenclass", "off-screen off-screen-right");
 		}
 
@@ -226,7 +273,6 @@ Home_Class.prototype.updateNavigation = function() {
 
 }; // end Home_Class.updateNavigation()
 
-
 /**
  * @description The intro container is visible when the window's scroll top
  * is greater or equal to the height of the intro container.
@@ -242,7 +288,6 @@ Home_Class.prototype.isIntroContainerVisible = function() {
 
 	return isVisible;
 };
-
 
 /**
  * @description The intro header cannot be shown if the intro container is
@@ -265,7 +310,6 @@ Home_Class.prototype.canIntroHeaderBeShown = function() {
 	return canBeShown;
 };
 
-
 /**
  * @description The nav container is visible when the window height plus the scroll
  * top is greater than or equal to the nav container's top position and less than
@@ -286,7 +330,6 @@ Home_Class.prototype.isNavContainerVisible = function() {
 	return isVisible;
 };
 
-
 /**
  * @description Calculate the number of pixels of the nav container that are showing.  
  */
@@ -300,7 +343,6 @@ Home_Class.prototype.pixelsOfNavContainerShowing = function() {
 	return (pxShowing < 0 ? 0 : pxShowing);
 };
 
-
 /**
  * @description If none of the nav images has the off screen class then
  * return true because they're all visible.
@@ -309,7 +351,6 @@ Home_Class.prototype.pixelsOfNavContainerShowing = function() {
 Home_Class.prototype.areNavImagesVisible = function() { 
 	return (this.$navImages.hasClass("off-screen") == true ? false : true);
 };
-
 
 
 // ****************************************************************************
@@ -330,7 +371,6 @@ Home_Class.prototype.updateIntroContainerBackground = function() {
 	this.$introContainer.css({"background-position": coords });
 };
 
-
 /**
  * @description Update the opacity of the intro header as we scroll down the page so 
  * that it fades away as the intro container is scrolled out of view.
@@ -345,7 +385,6 @@ Home_Class.prototype.updateIntroHeaderOpacity = function() {
 
 	this.$introHeader.css("opacity", opacity);
 };
-
 
 /**
  * @description Slide the navigation images into or out of view.
