@@ -12,7 +12,6 @@ body {
 #intro-container,
 #nav-container, 
 #about-me-container {
-	height: 900px;
 	position: relative;
 }
 
@@ -77,28 +76,73 @@ body {
 	background-image: -ms-linear-gradient(top, #c4c4c4 38%, #ffffff 80%);
 	background-image: linear-gradient(top, #c4c4c4 38%, #ffffff 80%);
 	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.38, #c4c4c4), color-stop(0.80, #ffffff));
+	padding-bottom: 200px;
+	padding-top: 100px;
+	text-align: center;
+}
+
+/* Large desktop */
+@media (min-width: 1200px) { 
+	#nav-container {
+		padding-left: 200px;
+		padding-right: 200px;
+	}
+}
+     
+/* Portrait tablet to landscape and desktop */
+@media (min-width: 768px) and (max-width: 979px) { 
+	#nav-container {
+		padding-left: 100px;
+		padding-right: 100px;
+	}
+}
+     
+/* Landscape phone to portrait tablet */
+@media (max-width: 767px) { 
+	#nav-container {
+		padding-left: 50px;
+		padding-right: 50px;
+	}
+}
+     
+/* Landscape phones */
+@media (max-width: 480px) {  
+	#nav-container {
+		padding-left: 25px;
+		padding-right: 25px;
+	}
+}
+
+/* Portrait phones */
+@media (max-width: 360px) {  
+	#nav-container {
+		padding-left: 0px;
+		padding-right: 0px;
+	}
 }
 
 .nav-image {
 	background: #000000 url(../images/gold-picture-frame-349x291.png) left top no-repeat;
-	padding: 60px;
+	display: inline-block;
 	height: 171px;
 	overflow: hidden;
-	position: absolute;
+	padding: 60px;
+	margin: 0px 20px 40px 20px;
 	-moz-transition: all 1s ease 0s;
 	-webkit-transition: all 1s ease 0s;
 	-o-transition: all 1s ease 0s;
 	transition: all 1s ease 0s;
 	width: 229px;
-	z-index: 10;
 }
 
-.nav-image.off-screen-left {
-	left: -1000px !important;
-}
-
-.nav-image.off-screen-right {
-	right: -1000px !important;
+/* Portrait phones */
+@media (max-width: 360px) {  
+	.nav-image {
+		background-color: transparent;
+		background-size: 100% 100%;
+		margin: 0px 0px 40px 0px;
+		padding: 40px;
+	}
 }
 
 .nav-image img {
@@ -110,6 +154,8 @@ body {
 	background: transparent url(../images/trophy-plaque-175x50.png) left top no-repeat;
 	color: #ba954c;
 	cursor: pointer;
+	/* TEMP: Hide the caption images. */
+	display: none;
 	font-family: 'Denk One', Helvetica, sans-serif;
 	font-weight: bold;
 	height: 50px;
@@ -130,6 +176,8 @@ body {
 
 #about-me-container {
 	background-color: #000000;
+	/* TEMP: This *may* be a temporary height, we'll have to wait and see. */
+	height: 900px;
 }
 
 #about-me-container p {

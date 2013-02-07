@@ -44,23 +44,19 @@ Home_Class.prototype.init = function() {
 	this.$navImages = this.$navContainer.find(".nav-image");
 
 	//
-	// Data members
-	//
-	
-	this.heights.introContainer = this.$introContainer.height();
-	this.heights.introHeader = this.$introHeader.height();
-	this.heights.navContainer = this.$navContainer.height();
-
-	this.positions.introHeaderTop = parseInt(this.$introHeader.css("top"));
-	this.positions.navContainerTop = parseInt(this.$navContainer.position().top);
-
-	//
 	// Update sizing and positioning
 	//
 
-	this.updateIntroContainerHeight();
-	this.updateNavigation();
+	this.setIntroContainerHeight();
+	this.getHeights();
+
+	//
+	// Update positioning
+	//
 	
+	this.positions.introHeaderTop = parseInt(this.$introHeader.css("top"), 10);
+	this.positions.navContainerTop = parseInt(this.$navContainer.position().top, 10);
+
 	// 
 	// Event handlers
 	//
@@ -86,16 +82,16 @@ Home_Class.prototype.init = function() {
 // ****************************************************************************
 
 /**
- * @description Upon the last window resize event firing we'll update our 
- * section container heights and then the navigation positioning.
+ * @description Upon the last window resize event firing we'll set our intro
+ * container height, update our heights, and then the navigation positioning.
  */
 
-Home_Class.prototype.window_resize = function(e) { 
+Home_Class.prototype.window_resize = function() { 
 	var self = this;
 
 	var fResize = function() { 
-		self.updateIntroContainerHeight();
-		self.updateNavigation();
+		self.setIntroContainerHeight();
+		self.getHeights();
 	};	
 
 	window.clearTimeout(this.timeouts.resize);
@@ -106,23 +102,20 @@ Home_Class.prototype.window_resize = function(e) {
  * @description Handle the onscroll events to liven up the home page.
  */
 
-Home_Class.prototype.window_scroll = function(e) { 
-
-	var windowScrollTop = $(window).scrollTop();
-
-	if (this.isIntroContainerVisible() == true) {
+Home_Class.prototype.window_scroll = function() { 
+	if (this.isIntroContainerVisible()) {
 		this.updateIntroContainerBackground();
 		this.updateIntroHeaderOpacity();
 	}
 
-	if (this.isNavContainerVisible() == true) { 
+	if (this.isNavContainerVisible()) {
 		var pxShowing = this.pixelsOfNavContainerShowing();
 		var areNavImagesVisible = this.areNavImagesVisible();
 	
-		if (pxShowing >= this.navContainerPxShowing && areNavImagesVisible == false) { 
+		if (pxShowing >= this.navContainerPxShowing && ! areNavImagesVisible) {
 			this.toggleNavImages(true);
 		}
-		else if (pxShowing < this.navContainerPxShowing && areNavImagesVisible == true) {
+		else if (pxShowing < this.navContainerPxShowing && areNavImagesVisible) {
 			this.toggleNavImages(false);
 		}
 	}
@@ -134,144 +127,26 @@ Home_Class.prototype.window_scroll = function(e) {
 // ****************************************************************************
 
 /**
+ * @description Get the heights of our primary elements.
+ */
+
+Home_Class.prototype.getHeights = function() {
+	this.heights.introContainer = this.$introContainer.height();
+	this.heights.introHeader = this.$introHeader.height();
+	this.heights.navContainer = this.$navContainer.height();
+};
+
+/**
  * @description Set the height of the intro container elements to be the height 
  * of the view port so that the background image on the intro container, and perhaps
  * others, covers the viewport properly.  This method will be called after the 
  * last window resize event.
  */
 
-Home_Class.prototype.updateIntroContainerHeight = function() { 
+Home_Class.prototype.setIntroContainerHeight = function() { 
 	var height = $(window).height();
 	this.$introContainer.css("height", height + "px");
 };
-
-/**
- * @description Programmatically posiiton the navigation images based on the
- * screen resolution width.  This method will be called after the last window
- * resize event.
- */
-
-Home_Class.prototype.updateNavigation = function() { 
-
-	var screenWidth = $(window).width();
-	var navImageWidth = this.$navImages.outerWidth();
-	var navImageHeight = this.$navImages.outerHeight();
-	var rowOffSet = 50;
-	var paddingBetween = 30;
-	var pxShowing = this.pixelsOfNavContainerShowing();
-
-	//
-	// Calculate the minimum row width for 3, 2 and 1 image(s).
-	// 
-	
-	var minRowWidthFor3 = 3 * navImageWidth + 2 * paddingBetween;
-	var minRowWidthFor2 = 2 * navImageWidth + paddingBetween;
-	var minRowWidthFor1 = navImageWidth;
-
-	//
-	// Determine the number of images per row and the minimum row width
-	// based on the screen width.
-	//
-	
-	var numPerRow, minRowWidth;
-
-	if (screenWidth >= minRowWidthFor3) {
-		numPerRow = 3;
-		minRowWidth = minRowWidthFor3;
-	}
-	else if (screenWidth >= minRowWidthFor2) {
-		numPerRow = 2;
-		minRowWidth = minRowWidthFor2;
-	}
-	else {
-		numPerRow = 1;
-		minRowWidth = minRowWidthFor1;
-	}
-	
-	//
-	// Position the images.
-	//
-		
-	var rowLeftPos = (screenWidth - minRowWidth) / 2;
-	var numRenderedPerRow = 0;
-	var numRows, rowNum = 1;
-
-	for (var i = 0; i < this.$navImages.length; i++) { 	
-		var $navImage = $(this.$navImages[i]);
-
-		// Once we're rendered the number per row we start rendering the 
-		// next image on a new row.
-		
-		if (numRenderedPerRow == numPerRow) {
-			numRenderedPerRow = 0;
-			rowNum++;
-			numRows = rowNum;
-
-			// If the number of images we have left to display is less than 
-			// the number we're displaying per row then we need to update 
-			// the number per row and minimum row width.
-		
-			var numImagesLeft = this.$navImages.length - i;
-	
-			if (numImagesLeft <= numPerRow) {
-				if (numImagesLeft == 2) { 
-					numPerRow = 2;
-					minRowWidth = minRowWidthFor2;
-				}
-				else {
-					numPerRow = 1;
-					minRowWidth = minRowWidthFor1;
-				}
-				rowLeftPos = (screenWidth - minRowWidth) / 2;
-			}
-		}
-		
-		var left = rowLeftPos + (numRenderedPerRow * (navImageWidth + paddingBetween));
-		var top = rowOffSet * rowNum + ((rowNum - 1) * navImageHeight);
-
-		if (rowNum % 2) {
-			$navImage.css("left", left + "px");
-		}
-		else {
-			$navImage.css("right", (screenWidth - left - navImageWidth) + "px");
-		}
-
-		$navImage.css("top", top + "px");
-			
-		if (rowNum % 2) {
-			if (pxShowing < this.navContainerPxShowing) {
-				$navImage.addClass("off-screen off-screen-left");
-			}
-
-			$navImage.data("offscreenclass", "off-screen off-screen-left");
-		}
-		else {
-			if (pxShowing < this.navContainerPxShowing) {
-				$navImage.addClass("off-screen off-screen-right");
-			}
-
-			$navImage.data("offscreenclass", "off-screen off-screen-right");
-		}
-
-		numRenderedPerRow++;
-	}	
-
-	//
-	// After positioning the navigation images we may need to reset the
-	// height of the navigation container if height of the number of 
-	// rows of images we've rendered exceeds the original height of 
-	// the navigation container.
-	//
-
-	var heightOfRows = (rowOffSet * numRows) + (navImageHeight * numRows);
-
-	if (heightOfRows >= this.heights.navContainer - 100) { // -100px breathing room
-		var newHeight = heightOfRows + 100;
-		this.$navContainer.css("height", newHeight + "px");
-		this.heights.navContainer = newHeight;
-	}
-
-}; // end Home_Class.updateNavigation()
 
 /**
  * @description The intro container is visible when the window's scroll top
@@ -298,7 +173,7 @@ Home_Class.prototype.isIntroContainerVisible = function() {
 Home_Class.prototype.canIntroHeaderBeShown = function() { 
 	var canBeShown = true;
 
-	if (this.isIntroContainerVisible() == false) {
+	if (! this.isIntroContainerVisible()) {
 		canBeShown = false;
 	}
 	else {
@@ -349,7 +224,7 @@ Home_Class.prototype.pixelsOfNavContainerShowing = function() {
  */
 
 Home_Class.prototype.areNavImagesVisible = function() { 
-	return (this.$navImages.hasClass("off-screen") == true ? false : true);
+	return (this.$navImages.hasClass("off-screen") ? false : true);
 };
 
 
@@ -381,6 +256,7 @@ Home_Class.prototype.updateIntroHeaderOpacity = function() {
 	var scrollTop = $(window).scrollTop();
 	var scrollRange = this.heights.introContainer - this.positions.introHeaderTop;
 	var opacity = Number((100 - (scrollTop / scrollRange * 100)) / 100).toFixed(2);
+
 	opacity = opacity < 0 ? 0 : opacity;
 
 	this.$introHeader.css("opacity", opacity);
@@ -414,16 +290,17 @@ Home_Class.prototype.toggleNavImages = function(show) {
 				}
 			
 				// Reset our mutex once we've toggled the last nav image.
-				if (index == that.$navImages.length - 1) {
+				if (index === that.$navImages.length - 1) {
 					that.togglingNavImages = false;
 				}
 			});
 	};
 
-	var delay = (show == true ? 500 : 100);
+	var delay = (show ? 500 : 100);
 
 	this.$navImages.each(function(index) {
 		fEach($(this), delay * (index + 1), index);
 	});
 
 }; // end Home_Class.toggleNavImages()
+
