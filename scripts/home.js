@@ -8,7 +8,7 @@ var Home_Class = function() {
 	this.$introContainer = null;
 	this.$introHeader = null;
 	this.$navContainer = null;
-	this.$navImages = null;
+	this.navImageCaptions = null;
 
 	this.navContainerPxShowing = 200;
 
@@ -29,7 +29,7 @@ var Home_Class = function() {
 
 	// Set to true when toggling nav images and to false when done so that
 	// we don't toggle them in or out when already doing so!
-	this.togglingNavImages = false;
+	this.togglingNavImageCaptions = false;
 };
 
 Home_Class.prototype.init = function() { 
@@ -41,7 +41,7 @@ Home_Class.prototype.init = function() {
 	this.$introContainer = $("#intro-container");
 	this.$introHeader = $("#intro-header");
 	this.$navContainer = $("#nav-container");
-	this.$navImages = this.$navContainer.find(".nav-image");
+	this.navImageCaptions = this.$navContainer.find(".nav-image-caption");
 
 	//
 	// Update sizing and positioning
@@ -65,15 +65,10 @@ Home_Class.prototype.init = function() {
 	$(window).scroll($.proxy(this.window_scroll, this));
 
 	//
-	// Add a custom jQuery wait() method for more expressive setTimeout() code.
-	// See: http://www.intridea.com/blog/2011/2/8/fun-with-jquery-deferred#
-	//
+	// Set data members
+	// 
 
-	$.wait = function(time) {
-		return $.Deferred(function(dfd) {
-			setTimeout(dfd.resolve, time);
-		});
-	};
+	this.togglingNavImageCaptions = false;
 };
 
 
@@ -110,13 +105,13 @@ Home_Class.prototype.window_scroll = function() {
 
 	if (this.isNavContainerVisible()) {
 		var pxShowing = this.pixelsOfNavContainerShowing();
-		var areNavImagesVisible = this.areNavImagesVisible();
+		var areCaptionsVisible = this.areCaptionsVisible();
 	
-		if (pxShowing >= this.navContainerPxShowing && ! areNavImagesVisible) {
-			this.toggleNavImages(true);
+		if (pxShowing >= this.navContainerPxShowing && ! areCaptionsVisible) {
+			this.toggleNavImageCaptions(true);
 		}
-		else if (pxShowing < this.navContainerPxShowing && areNavImagesVisible) {
-			this.toggleNavImages(false);
+		else if (pxShowing < this.navContainerPxShowing && areCaptionsVisible) {
+			this.toggleNavImageCaptions(false);
 		}
 	}
 };
@@ -218,14 +213,10 @@ Home_Class.prototype.pixelsOfNavContainerShowing = function() {
 	return (pxShowing < 0 ? 0 : pxShowing);
 };
 
-/**
- * @description If none of the nav images has the off screen class then
- * return true because they're all visible.
- */
-
-Home_Class.prototype.areNavImagesVisible = function() { 
-	return (this.$navImages.hasClass("off-screen") ? false : true);
+Home_Class.prototype.areCaptionsVisible = function() {
+	return ($(this.navImageCaptions).hasClass("hidden") ? false : true);
 };
+
 
 
 // ****************************************************************************
@@ -252,7 +243,6 @@ Home_Class.prototype.updateIntroContainerBackground = function() {
  */
 
 Home_Class.prototype.updateIntroHeaderOpacity = function() { 
-
 	var scrollTop = $(window).scrollTop();
 	var scrollRange = this.heights.introContainer - this.positions.introHeaderTop;
 	var opacity = Number((100 - (scrollTop / scrollRange * 100)) / 100).toFixed(2);
@@ -262,45 +252,38 @@ Home_Class.prototype.updateIntroHeaderOpacity = function() {
 	this.$introHeader.css("opacity", opacity);
 };
 
-/**
- * @description Slide the navigation images into or out of view.
- */
 
-Home_Class.prototype.toggleNavImages = function(show) {
+Home_Class.prototype.toggleNavImageCaptions = function(show) {
 
-	// Just return if we're already toggling the nav images.
-	if (this.togglingNavImages) { 
+	if (this.togglingNavImageCaptions) { 
 		return;
 	}
 
-	this.togglingNavImages = true;
+	this.togglingNavImageCaptions = true;
 
-	var that = this;
+	var self = this;
+	var currentCaption = 0;
+	var timeout = (show ? 500 : 100);
 
-	var fEach = function($navImage, delay, index) {
-		$.wait(delay)
-			.then(function() { 
-				if (show) { 
-					$navImage.removeClass("off-screen off-screen-left");
-					$navImage.removeClass("off-screen off-screen-right");
-				}
-				else {
-					var offScreenClassName = $navImage.data("offscreenclass");
-					$navImage.addClass(offScreenClassName);
-				}
-			
-				// Reset our mutex once we've toggled the last nav image.
-				if (index === that.$navImages.length - 1) {
-					that.togglingNavImages = false;
-				}
-			});
+	var fTimeout = function() { 
+    	var $caption = $(self.navImageCaptions[currentCaption]);
+
+		if (show) { 
+    		$caption.removeClass("hidden");
+		}
+		else { 
+    		$caption.addClass("hidden");
+		}
+	
+    	currentCaption++
+    	
+    	if (currentCaption < self.navImageCaptions.length) { 
+        	window.setTimeout(fTimeout, timeout);
+    	}
+		else {
+			self.togglingNavImageCaptions = false;
+		}
 	};
 
-	var delay = (show ? 500 : 100);
-
-	this.$navImages.each(function(index) {
-		fEach($(this), delay * (index + 1), index);
-	});
-
-}; // end Home_Class.toggleNavImages()
-
+	fTimeout();
+};

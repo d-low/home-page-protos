@@ -12,6 +12,7 @@ body {
 #intro-container,
 #nav-container, 
 #about-me-container {
+	min-height: 900px;
 	position: relative;
 }
 
@@ -127,6 +128,7 @@ body {
 	height: 171px;
 	overflow: hidden;
 	padding: 60px;
+	position: relative;
 	margin: 0px 20px 40px 20px;
 	-moz-transition: all 1s ease 0s;
 	-webkit-transition: all 1s ease 0s;
@@ -154,8 +156,6 @@ body {
 	background: transparent url(../images/trophy-plaque-175x50.png) left top no-repeat;
 	color: #ba954c;
 	cursor: pointer;
-	/* TEMP: Hide the caption images. */
-	display: none;
 	font-family: 'Denk One', Helvetica, sans-serif;
 	font-weight: bold;
 	height: 50px;
@@ -163,21 +163,19 @@ body {
 	left: 87px;
 	position: absolute;
 	text-align: center;
-	top: -100px;
+	top: 235px;
 	transition: all 0.75s cubic-bezier(0.19, 1, 0.22, 1) 0.25s;
 	width: 175px;
 }
 
-.nav-image:hover .nav-image-caption {
-	top: 235px;
+.nav-image .nav-image-caption.hidden {
+	top: -100px;
 }
 
 /* Temporary styles for the about me container. */
 
 #about-me-container {
 	background-color: #000000;
-	/* TEMP: This *may* be a temporary height, we'll have to wait and see. */
-	height: 900px;
 }
 
 #about-me-container p {
