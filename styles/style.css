@@ -2,6 +2,8 @@
 
 body { 
 	background-color: #c4c4c4;
+	color: #333333;
+	font: normal 12px/24px Arial, Helvetica, serif;
 }
 
 #container {
@@ -12,9 +14,10 @@ body {
 #intro-container,
 #nav-container, 
 #about-me-container {
-	min-height: 900px;
 	position: relative;
 }
+
+/* Intro Container Styles */
 
 #intro-container { 
 	background: url(../images/intro-image.jpg) 50% 0px no-repeat fixed;
@@ -70,6 +73,8 @@ body {
 	}
 }
 
+/* Nav Container Styles */
+
 #nav-container { 
 	background-image: -o-linear-gradient(top, #c4c4c4 38%, #ffffff 80%);
 	background-image: -moz-linear-gradient(top, #c4c4c4 38%, #ffffff 80%);
@@ -77,14 +82,19 @@ body {
 	background-image: -ms-linear-gradient(top, #c4c4c4 38%, #ffffff 80%);
 	background-image: linear-gradient(top, #c4c4c4 38%, #ffffff 80%);
 	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.38, #c4c4c4), color-stop(0.80, #ffffff));
-	padding-bottom: 200px;
-	padding-top: 100px;
 	text-align: center;
+}
+
+#nav-container, 
+#about-me-container {
+	padding-bottom: 100px;
+	padding-top: 100px;
 }
 
 /* Large desktop */
 @media (min-width: 1200px) { 
-	#nav-container {
+	#nav-container,
+	#about-me-container {
 		padding-left: 200px;
 		padding-right: 200px;
 	}
@@ -92,7 +102,8 @@ body {
      
 /* Portrait tablet to landscape and desktop */
 @media (min-width: 768px) and (max-width: 979px) { 
-	#nav-container {
+	#nav-container,
+	#about-me-container {
 		padding-left: 100px;
 		padding-right: 100px;
 	}
@@ -100,7 +111,8 @@ body {
      
 /* Landscape phone to portrait tablet */
 @media (max-width: 767px) { 
-	#nav-container {
+	#nav-container,
+	#about-me-container {
 		padding-left: 50px;
 		padding-right: 50px;
 	}
@@ -108,7 +120,8 @@ body {
      
 /* Landscape phones */
 @media (max-width: 480px) {  
-	#nav-container {
+	#nav-container,
+	#about-me-container {
 		padding-left: 25px;
 		padding-right: 25px;
 	}
@@ -116,7 +129,8 @@ body {
 
 /* Portrait phones */
 @media (max-width: 360px) {  
-	#nav-container {
+	#nav-container,
+	#about-me-container {
 		padding-left: 0px;
 		padding-right: 0px;
 	}
@@ -157,6 +171,7 @@ body {
 	color: #ba954c;
 	cursor: pointer;
 	font-family: 'Denk One', Helvetica, sans-serif;
+	font-size: 14px;
 	font-weight: bold;
 	height: 50px;
 	line-height: 50px;
@@ -172,13 +187,51 @@ body {
 	top: -100px;
 }
 
-/* Temporary styles for the about me container. */
+/* About Me Styles */
 
 #about-me-container {
-	background-color: #000000;
+	background-color: #ffffff;
+	background-image: -o-linear-gradient(top, #ffffff 38%, #c4c4c4 80%);
+	background-image: -moz-linear-gradient(top, #ffffff 38%, #c4c4c4 80%);
+	background-image: -webkit-linear-gradient(top, #ffffff 38%, #c4c4c4 80%);
+	background-image: -ms-linear-gradient(top, #ffffff 38%, #c4c4c4 80%);
+	background-image: linear-gradient(top, #ffffff 38%, #c4c4c4 80%);
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.38, #ffffff), color-stop(0.80, #c4c4c4));
+	text-align: center;
 }
 
-#about-me-container p {
-	color: #666666;
+#about-me-image { 
+	border: 1px solid #cdd3d5;
+	display: inline-block;
+	margin: 0px 50px 150px 50px;
+	padding: 5px;
+	vertical-align: top;
+	width: 236px;
+}
+
+#about-me-copy {
+	display: inline-block;
+	font-size: 20px;
+	line-height: 30px;
+	text-align: left;
+	vertical-align: top;
+	width: 300px;
+}
+
+#about-me-copy:first-letter {
+	font-size: 30px;
 	font-weight: bold;
+}
+
+#about-me-contact-info {
+	margin: 50px 0px 100px 0px;
+}
+
+#about-me-contact-info li {
+	display: inline-block;
+	padding: 0px 15px 0px 15px;
+}
+
+#about-me-contact-info small { 
+	color: #666666;
 }
